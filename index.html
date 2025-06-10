@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Search & Download</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f0f9ff;
+    }
+    .search-container {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+    }
+</style>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="search-container max-w-2xl mx-auto rounded-lg shadow-lg p-6">
+            <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">Image Search & Download</h1>
+            
+            <!-- Upload Section -->
+            <div class="mb-8">
+                <label class="block text-gray-700 text-sm font-semibold mb-2">Upload Image</label>
+                <div class="flex items-center justify-center w-full">
+                    <label class="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg shadow-lg tracking-wide border border-blue-500 cursor-pointer hover:bg-blue-50 transition-all">
+                        <i class="bi bi-cloud-upload text-3xl text-blue-500"></i>
+                        <span class="mt-2 text-base">Select a file</span>
+                        <input type="file" class="hidden" id="fileInput" accept="image/*">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div id="imagePreview" class="hidden mb-8">
+                <h2 class="text-lg font-semibold mb-2">Preview</h2>
+                <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                    <img id="preview" class="max-w-full max-h-full object-contain" src="" alt="Preview">
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div id="searchResults" class="hidden">
+                <h2 class="text-lg font-semibold mb-4">Similar Images</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="resultsGrid">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="hidden">
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                    
+                    // Simulate search (for demo purposes)
+                    simulateSearch();
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function simulateSearch() {
+            const loading = document.getElementById('loading');
+            const searchResults = document.getElementById('searchResults');
+            const resultsGrid = document.getElementById('resultsGrid');
+
+            // Show loading
+            loading.classList.remove('hidden');
+            searchResults.classList.add('hidden');
+
+            // Simulate API call delay
+            setTimeout(() => {
+                loading.classList.add('hidden');
+                searchResults.classList.remove('hidden');
+
+                // Generate dummy results
+                resultsGrid.innerHTML = '';
+                for (let i = 0; i < 4; i++) {
+                    const result = document.createElement('div');
+                    result.className = 'relative group';
+                    result.innerHTML = `
+                        <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200">
+                            <img src="https://source.unsplash.com/random/300x300?sig=${i}" 
+                                 class="h-48 w-full object-cover group-hover:opacity-75 transition-opacity"
+                                 alt="Similar image ${i + 1}">
+                        </div>
+                        <div class="mt-2 flex justify-between items-center">
+                            <button onclick="downloadImage(this)" 
+                                    class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
+                                Download
+                            </button>
+                        </div>
+                    `;
+                    resultsGrid.appendChild(result);
+                }
+            }, 2000);
+        }
+
+        function downloadImage(button) {
+            const imgUrl = button.parentElement.parentElement.querySelector('img').src;
+            const link = document.createElement('a');
+            link.href = imgUrl;
+            link.download = 'image.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
